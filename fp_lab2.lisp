@@ -1,28 +1,28 @@
 (defun group-pairs (lst)
   (cond
-    ((second lst)
-      (cons (list (first lst) (second lst)) (group-pairs (cddr lst))))
-    ((first lst)
-      (cons (list (first lst)) nil))
-  ))
+    ((cdr lst)
+      (cons (list (car lst) (cadr lst)) (group-pairs (cddr lst))))
+    ((not (null lst))
+      (cons (list (car lst)) nil))))
 
 (defun contains (keys value)
-  (cond 
+  (cond
     ((null keys) nil)
-    ((equalp (first keys) value) t)
+    ((equal (first keys) value) t)
     (t (contains (cdr keys) value))))
 
-(defun generate-keys (first-lst second-lst keys)
-  (if (and (null first-lst) (null second-lst))
-      keys
-      (generate-keys (cdr first-lst) (cdr second-lst) (append-if-not-key (first second-lst) (append-if-not-key (first first-lst) keys)))))
-
-(defun append-if-not-key (value keys) 
-  (if (contains keys value) keys (if (null value) keys (cons value keys))))
+(defun generate-keys (lst keys)
+  (cond 
+    ((null lst) 
+      keys)
+    (t
+      (generate-keys (cdr lst) 
+        (if (contains keys (car lst))
+          keys 
+          (cons (car lst) keys))))))
 
 (defun list-set-union (first-lst second-lst)
-  (generate-keys first-lst second-lst '()))
-
+  (generate-keys second-lst (generate-keys first-lst '())))
 
 (defun check-group-pairs (name input expected)
   "Checks the `group-pairs` function on the given input and expected result."
